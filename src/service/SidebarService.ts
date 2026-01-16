@@ -41,11 +41,13 @@ export class SidebarService {
 
         groups.forEach(group => {
             // Insert header
-            const header = document.createElement('div');
-            header.className = 'iitc-sidebar-sorter-header';
-            header.dataset.groupId = group.id;
-            header.textContent = group.name;
-            root.appendChild(header);
+            if ('default' !== group.name) {
+                const header = document.createElement('div');
+                header.className = 'iitc-sidebar-sorter-header';
+                header.dataset.groupId = group.id;
+                header.textContent = group.name;
+                root.appendChild(header);
+            }
 
             // Insert items
             group.items.forEach(id => {

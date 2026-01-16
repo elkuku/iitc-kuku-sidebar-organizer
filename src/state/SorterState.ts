@@ -24,7 +24,7 @@ export class SorterState {
     initFromSidebar(): void {
         this.groups = [{
             id: SorterState.uid(),
-            name: '',
+            name: 'default',
             items: this.sidebar.readLinks().map(l => ({
                 id: l.id,
                 title: l.title

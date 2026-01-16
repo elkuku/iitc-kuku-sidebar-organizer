@@ -5,5 +5,5 @@
   "description": "Organize your sidebar",
   "author": "elkuku",
   "entry": "src/Main.ts",
-  "minimize": false
+  "minimize": true
 }
