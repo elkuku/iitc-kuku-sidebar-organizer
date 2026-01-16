@@ -1,8 +1,6 @@
-# TEST
+# Sidebar Organizer
 
-CHANGEME
-
-`todo`: Add your content
+Organize your sidebar
 
 ----
 Made with :heart: and the [IITC Plugin Kit](https://github.com/McBen/IITCPluginKit)
