@@ -38,7 +38,7 @@ export class DialogHelper {
                 },
                 {
                     text: 'Reset',
-                    click: ()=> {
+                    click: () => {
                         this.storage.clear()
                         this.state.initFromSidebar()
                         this.render()

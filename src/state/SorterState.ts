@@ -1,14 +1,14 @@
 import { SidebarService } from '../service/SidebarService';
 
-export interface SorterItem {
-    id: string;
-    title: string;
-}
-
 export interface SorterGroup {
     id: string;
     name: string;
     items: SorterItem[];
+}
+
+export interface SorterItem {
+    id: string;
+    title: string;
 }
 
 export class SorterState {
@@ -25,14 +25,10 @@ export class SorterState {
         this.groups = [{
             id: SorterState.uid(),
             name: 'default',
-            items: this.sidebar.readLinks().map(l => ({
-                id: l.id,
-                title: l.title
+            items: this.sidebar.readLinks().map(link => ({
+                id: link.id,
+                title: link.title
             }))
         }];
-    }
-
-    flattenIds(): string[] {
-        return this.groups.flatMap(g => g.items.map(i => i.title));
     }
 }

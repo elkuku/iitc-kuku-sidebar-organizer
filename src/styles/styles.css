@@ -17,6 +17,6 @@
     right: 5px;
 }
 
-div.iitc-sidebar-sorter-header {
-    border-bottom: 1px solid lightgray;
+div.iitc-toolbox-header {
+    border-top: 1px dashed dimgray;
 }

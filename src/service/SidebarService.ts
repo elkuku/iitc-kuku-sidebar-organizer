@@ -40,19 +40,18 @@ export class SidebarService {
         this.readLinks().forEach(l => linkMap.set(l.title, l.element));
 
         groups.forEach(group => {
-            // Insert header
             if ('default' !== group.name) {
+                // Insert header
                 const header = document.createElement('div');
-                header.className = 'iitc-sidebar-sorter-header';
+                header.className = 'iitc-toolbox-header';
                 header.dataset.groupId = group.id;
                 header.textContent = group.name;
                 root.appendChild(header);
             }
 
             // Insert items
-            group.items.forEach(id => {
-                console.log(id)
-                const element = linkMap.get(id.title);
+            group.items.forEach(item => {
+                const element = linkMap.get(item.title);
                 if (element) root.appendChild(element);
             });
         });

@@ -5,14 +5,14 @@ import {SidebarService} from './service/SidebarService'
 import {StorageService} from './service/StorageService'
 import {SorterGroup, SorterState} from './state/SorterState'
 
-// @ts-expect-error we don't want to import JSON files :(
 import plugin from '../plugin.json'
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-const PLUGIN_NAME = plugin.name.replace('IITC plugin: ', '') as string
+import './styles/styles.css'
+
+const PLUGIN_NAME = (plugin as { name: string }).name.replace('IITC plugin: ', '')
 
 class Main implements Plugin.Class {
-    private readonly STORAGE_KEY = 'KuKu_SIDEBAR_SORTER'
+    private readonly STORAGE_KEY = 'KuKu_SIDEBAR_ORGANIZER'
 
     private sidebar = new SidebarService()
     private storage = new StorageService<SorterGroup[]>(this.STORAGE_KEY)
@@ -21,17 +21,10 @@ class Main implements Plugin.Class {
     init() {
         console.log(`${PLUGIN_NAME} - ${VERSION}`)
 
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        require('./styles.css')
-
         this.createButtons()
 
         // Disable sorting @todo this seems like a hack :(
-        // IITC.toolbox.setSortMethod(() => 0)
-        IITC.toolbox.setSortMethod(() => {
-            console.log('Sorting disabled!')
-            return 0
-        })
+        IITC.toolbox.setSortMethod(() => 0)
 
         window.addHook('iitcLoaded', this.onIitcLoaded)
     }
@@ -40,15 +33,13 @@ class Main implements Plugin.Class {
         console.log(`${PLUGIN_NAME} - Starting`)
 
         const stored = this.storage.load()
-        console.log(stored)
+
         if (stored) {
             this.state.groups = stored
             this.sidebar.reorder(this.state.groups)
         } else {
             this.state.initFromSidebar()
         }
-        console.log(this.state)
-        console.log(this.state.groups)
     }
 
     private createButtons(): void {
@@ -56,7 +47,7 @@ class Main implements Plugin.Class {
             label: 'Organizer',
             title: 'Organize your sidebar [y]',
             accessKey: 'y',
-            id: `btn-${PLUGIN_NAME}`,
+            id: `${PLUGIN_NAME}-ToolboxButton`,
             action: this.showDialog
         })
     }
