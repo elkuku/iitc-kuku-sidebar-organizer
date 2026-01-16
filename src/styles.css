@@ -1,0 +1,22 @@
+.sortable-chosen {
+    border: 1px dashed lightgray;
+    cursor: grabbing;
+}
+
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #c8ebfb;
+}
+
+.sortable-drag {
+    opacity: 0.9;
+}
+
+.drag-handle {
+    cursor: grabbing;
+    right: 5px;
+}
+
+div.iitc-sidebar-sorter-header {
+    border-bottom: 1px solid lightgray;
+}

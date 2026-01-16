@@ -1,0 +1,9 @@
+{
+  "name": "IITC plugin: KuKuSidebarOrganizer",
+  "id": "iitc_plugin_KuKuSidebarOrganizer",
+  "category": "Controls",
+  "description": "Organize your sidebar",
+  "author": "elkuku",
+  "entry": "src/Main.ts",
+  "minimize": false
+}
