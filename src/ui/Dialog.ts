@@ -94,8 +94,10 @@ export class DialogHelper {
             html += `<span class="title">${item.title}</span>`
             // html += `<span class="context-menu" onclick="window.plugin.${this.pluginName}.openContextMenu('${item.title}', event)">O</span>`
 
-            const hidden = item.options.visible ? '' : ' item-hidden'
-            html += `<span class="context-menu toggle-visible${hidden}" data-identifier="${item.title}" title="Show/hide">X</span>`
+            if ('Organizer' !== item.title) {
+                const hidden = item.options.visible ? '' : ' item-hidden'
+                html += `<span class="context-menu toggle-visible${hidden}" data-identifier="${item.title}" title="Show/hide">X</span>`
+            }
 
             itemContainer.innerHTML = html
             itemList.appendChild(itemContainer)
