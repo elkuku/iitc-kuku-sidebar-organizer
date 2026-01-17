@@ -1,4 +1,4 @@
-import { SidebarService } from '../service/SidebarService';
+import {SidebarService} from '../service/SidebarService'
 
 export interface SorterGroup {
     id: string;
@@ -9,16 +9,22 @@ export interface SorterGroup {
 export interface SorterItem {
     id: string;
     title: string;
+    options: SorterOptions
+}
+
+export interface SorterOptions {
+    visible: boolean
+    icon: string
 }
 
 export class SorterState {
 
-    groups: SorterGroup[] = [];
+    groups: SorterGroup[] = []
 
     constructor(private sidebar: SidebarService) {}
 
     static uid(): string {
-        return `grp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        return `grp-${Date.now()}-${Math.random().toString(36).slice(2)}`
     }
 
     initFromSidebar(): void {
@@ -27,8 +33,9 @@ export class SorterState {
             name: 'default',
             items: this.sidebar.readLinks().map(link => ({
                 id: link.id,
-                title: link.title
+                title: link.title,
+                options: {visible: true, icon: ''}
             }))
-        }];
+        }]
     }
 }

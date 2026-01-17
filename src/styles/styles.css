@@ -17,6 +17,37 @@
     right: 5px;
 }
 
+div.sortable-item span.context-menu {
+    float: right;
+    cursor: pointer;
+}
+
+div.sortable-item span.context-menu:hover {
+    background-color: lightyellow;
+    color: navy;
+}
+
+div.sortable-item span.context-menu.item-hidden {
+    color: crimson;
+}
+
+#floatingMenu {
+    position: fixed;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    display: none;
+}
+
+#floatingMenu.show {
+    display: block;
+}
+
 div.iitc-toolbox-header {
     border-top: 1px dashed dimgray;
+}
+
+#toolbox_component a.item-hidden{
+    display: none;
 }

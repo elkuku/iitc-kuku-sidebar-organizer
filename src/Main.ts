@@ -18,6 +18,8 @@ class Main implements Plugin.Class {
     private storage = new StorageService<SorterGroup[]>(this.STORAGE_KEY)
     private state = new SorterState(this.sidebar)
 
+    private dialog:DialogHelper
+
     init() {
         console.log(`${PLUGIN_NAME} - ${VERSION}`)
 
@@ -27,6 +29,11 @@ class Main implements Plugin.Class {
         IITC.toolbox.setSortMethod(() => 0)
 
         window.addHook('iitcLoaded', this.onIitcLoaded)
+    }
+
+    public openContextMenu(item: string, event:PointerEvent) {
+        console.log('openContextMenu', item, event)
+        this.dialog.openContextMenu(item, event)
     }
 
     private onIitcLoaded = () => {
@@ -40,6 +47,8 @@ class Main implements Plugin.Class {
         } else {
             this.state.initFromSidebar()
         }
+
+        this.dialog = new DialogHelper(PLUGIN_NAME, 'Sidebar Organizer', this.state, this.storage, this.sidebar)
     }
 
     private createButtons(): void {
@@ -53,8 +62,7 @@ class Main implements Plugin.Class {
     }
 
     private showDialog = (): void => {
-        new DialogHelper(PLUGIN_NAME, 'Sidebar Organizer', this.state, this.storage, this.sidebar)
-        .open()
+        this.dialog.open()
     }
 }
 

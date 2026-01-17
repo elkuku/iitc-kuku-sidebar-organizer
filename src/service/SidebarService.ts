@@ -26,7 +26,7 @@ export class SidebarService {
 
     clearHeaders(): void {
         this.getContainer()
-        ?.querySelectorAll('.iitc-sidebar-sorter-header')
+        ?.querySelectorAll('.iitc-toolbox-header')
         .forEach(h => h.remove());
     }
 
@@ -52,6 +52,7 @@ export class SidebarService {
             // Insert items
             group.items.forEach(item => {
                 const element = linkMap.get(item.title);
+                element?.classList.toggle('item-hidden', !item.options.visible);
                 if (element) root.appendChild(element);
             });
         });

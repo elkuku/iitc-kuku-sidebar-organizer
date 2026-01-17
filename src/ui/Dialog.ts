@@ -49,6 +49,7 @@ export class DialogHelper {
         })
 
         this.groupsRoot = document.querySelector(`#${this.pluginName}-Container`)!
+
         this.render()
     }
 
@@ -67,6 +68,16 @@ export class DialogHelper {
 
         html += '<div class="group-list"></div>'
 
+        html += `
+        <div id="floatingMenu">
+          <ul>
+            <li>Edit</li>
+            <li>Delete</li>
+            <li>Share</li>
+          </ul>
+        </div>
+        `
+
         groupContainer.innerHTML = html
 
         const itemList = groupContainer.querySelector<HTMLElement>('.group-list')!
@@ -75,11 +86,18 @@ export class DialogHelper {
             const itemContainer = document.createElement('div')
             itemContainer.dataset.id = item.id
             itemContainer.dataset.title = item.title
+            itemContainer.dataset.visible = item.options.visible ? 'true' : 'false'
+
             itemContainer.classList.add('sortable-item')
-            itemContainer.innerHTML = `
-                <span class="drag-handle">☰</span>
-                <span class="title">${item.title}</span>
-            `
+            let html = ''
+            html += `<span class="drag-handle" title="Drag to move">☰</span>`
+            html += `<span class="title">${item.title}</span>`
+            // html += `<span class="context-menu" onclick="window.plugin.${this.pluginName}.openContextMenu('${item.title}', event)">O</span>`
+
+            const hidden = item.options.visible ? '' : ' item-hidden'
+            html += `<span class="context-menu toggle-visible${hidden}" data-identifier="${item.title}" title="Show/hide">X</span>`
+
+            itemContainer.innerHTML = html
             itemList.appendChild(itemContainer)
         })
 
@@ -93,6 +111,12 @@ export class DialogHelper {
             )
         }
 
+        const toggleButtons = groupContainer.querySelectorAll<HTMLElement>('.toggle-visible')
+
+        for (const button of toggleButtons) {
+            button.addEventListener('click', () => this.onToggleVisible(button))
+        }
+
         new Sortable(itemList, {
             group: 'shared',
             handle: '.drag-handle',
@@ -101,6 +125,22 @@ export class DialogHelper {
         })
 
         return groupContainer
+    }
+
+    private onToggleVisible(button: HTMLElement) {
+        const parent = button.parentElement!
+
+        const visible = parent.dataset.visible!
+
+        if ('false' == visible) {
+            parent.dataset.visible = 'true'
+            button.classList.remove('item-hidden')
+        } else {
+            parent.dataset.visible = 'false'
+            button.classList.add('item-hidden')
+        }
+
+        this.sync()
     }
 
     private sync(): void {
@@ -112,11 +152,48 @@ export class DialogHelper {
             group.items = [...root.children]
             .map(li => ({
                 id: (li as HTMLElement).dataset.id!,
-                title: (li as HTMLElement).dataset.title!
+                title: (li as HTMLElement).dataset.title!,
+                options: {
+                    visible: (li as HTMLElement).dataset.visible !== 'false', //@todo
+                    icon: '', //@todo
+                }
             }))
         })
 
         this.storage.save(this.state.groups)
         this.sidebar.reorder(this.state.groups)
+    }
+
+    public openContextMenu(item: string, event: PointerEvent) {
+        console.log('Dialog - openContextMenu', item, event)
+
+        const menu = document.getElementById('floatingMenu')
+
+        if (!menu) return
+
+        event.stopPropagation()
+
+        const container = menu.parentElement
+
+        if (!container) return
+
+        const bounds = container.getBoundingClientRect()
+
+        console.log(bounds)
+
+        const x = event.clientX - bounds.left
+        const y = event.clientY - bounds.top
+
+        console.log('openContextMenu', event.clientX, event.clientY)
+        console.log('openContextMenu', x, y)
+
+        menu.style.left = `${x}px`
+        menu.style.top = `${y}px`
+
+        menu.classList.add('show')
+
+        window.addEventListener('click', () => {
+            menu.classList.remove('show')
+        })
     }
 }
