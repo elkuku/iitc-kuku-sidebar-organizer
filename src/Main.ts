@@ -7,7 +7,7 @@ import {SorterGroup, SorterState} from './state/SorterState'
 
 import plugin from '../plugin.json'
 
-import './styles/styles.css'
+import './styles.css'
 
 const PLUGIN_NAME = (plugin as { name: string }).name.replace('IITC plugin: ', '')
 
@@ -29,11 +29,6 @@ class Main implements Plugin.Class {
         IITC.toolbox.setSortMethod(() => 0)
 
         window.addHook('iitcLoaded', this.onIitcLoaded)
-    }
-
-    public openContextMenu(item: string, event:PointerEvent) {
-        console.log('openContextMenu', item, event)
-        this.dialog.openContextMenu(item, event)
     }
 
     private onIitcLoaded = () => {

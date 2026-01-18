@@ -1,12 +1,12 @@
 import Sortable from 'sortablejs'
 
-import {SorterGroup, SorterState} from '../state/SorterState'
+import {SorterGroup, SorterItem, SorterState} from '../state/SorterState'
 import {StorageService} from '../service/StorageService'
 import {SidebarService} from '../service/SidebarService'
 
 export class DialogHelper {
 
-    private groupsRoot!: HTMLElement
+    private root!: HTMLElement
 
     public constructor(
         private pluginName: string,
@@ -48,63 +48,37 @@ export class DialogHelper {
             ]
         })
 
-        this.groupsRoot = document.querySelector(`#${this.pluginName}-Container`)!
+        this.root = document.querySelector(`#${this.pluginName}-Container`)!
 
         this.render()
     }
 
     private render(): void {
-        this.groupsRoot.innerHTML = ''
+        this.root.innerHTML = ''
         this.state.groups.forEach(g =>
-            this.groupsRoot.appendChild(this.renderGroup(g))
+            this.root.appendChild(this.renderGroup(g))
         )
     }
 
     private renderGroup(group: SorterGroup): HTMLElement {
-        const groupContainer = document.createElement('div')
-        groupContainer.dataset.groupId = group.id
+        const container = document.createElement('div')
+        container.dataset.groupId = group.id
 
         let html = 'default' === group.name ? '' : `<input class="group-title" value="${group.name}">`
 
         html += '<div class="group-list"></div>'
 
-        html += `
-        <div id="floatingMenu">
-          <ul>
-            <li>Edit</li>
-            <li>Delete</li>
-            <li>Share</li>
-          </ul>
-        </div>
-        `
+        container.innerHTML = html
 
-        groupContainer.innerHTML = html
-
-        const itemList = groupContainer.querySelector<HTMLElement>('.group-list')!
+        const itemList = container.querySelector<HTMLElement>('.group-list')!
 
         group.items.forEach(item => {
-            const itemContainer = document.createElement('div')
-            itemContainer.dataset.id = item.id
-            itemContainer.dataset.title = item.title
-            itemContainer.dataset.visible = item.options.visible ? 'true' : 'false'
-
-            itemContainer.classList.add('sortable-item')
-            let html = ''
-            html += `<span class="drag-handle" title="Drag to move">☰</span>`
-            html += `<span class="title">${item.title}</span>`
-            // html += `<span class="context-menu" onclick="window.plugin.${this.pluginName}.openContextMenu('${item.title}', event)">O</span>`
-
-            if ('Organizer' !== item.title) {
-                const hidden = item.options.visible ? '' : ' item-hidden'
-                html += `<span class="context-menu toggle-visible${hidden}" data-identifier="${item.title}" title="Show/hide">X</span>`
-            }
-
-            itemContainer.innerHTML = html
-            itemList.appendChild(itemContainer)
+            itemList.appendChild(this.renderItem(item))
         })
 
         if ('default' !== group.name) {
-            groupContainer.querySelector<HTMLInputElement>('.group-title')!.addEventListener(
+            container.querySelector<HTMLInputElement>('.group-title')!
+            .addEventListener(
                 'input',
                 event => {
                     group.name = (event.target as HTMLInputElement).value
@@ -113,7 +87,7 @@ export class DialogHelper {
             )
         }
 
-        const toggleButtons = groupContainer.querySelectorAll<HTMLElement>('.toggle-visible')
+        const toggleButtons = container.querySelectorAll<HTMLElement>('.toggle-visible')
 
         for (const button of toggleButtons) {
             button.addEventListener('click', () => this.onToggleVisible(button))
@@ -126,7 +100,30 @@ export class DialogHelper {
             onEnd: () => this.sync()
         })
 
-        return groupContainer
+        return container
+    }
+
+    private renderItem(item:SorterItem):HTMLDivElement {
+        const container = document.createElement('div')
+
+        container.dataset.id = item.id
+        container.dataset.title = item.title
+        container.dataset.visible = item.options.visible ? 'true' : 'false'
+        container.classList.add('sortable-item')
+
+        let html = ''
+
+        html += `<span class="drag-handle" title="Drag to move">☰</span>`
+        html += `<span class="title">${item.title}</span>`
+
+        if ('Organizer' !== item.title) {
+            const hidden = item.options.visible ? '' : ' item-hidden'
+            html += `<span class="context-menu toggle-visible${hidden}" data-identifier="${item.title}" title="Show/hide">X</span>`
+        }
+
+        container.innerHTML = html
+
+        return container
     }
 
     private onToggleVisible(button: HTMLElement) {
@@ -164,38 +161,5 @@ export class DialogHelper {
 
         this.storage.save(this.state.groups)
         this.sidebar.reorder(this.state.groups)
-    }
-
-    public openContextMenu(item: string, event: PointerEvent) {
-        console.log('Dialog - openContextMenu', item, event)
-
-        const menu = document.getElementById('floatingMenu')
-
-        if (!menu) return
-
-        event.stopPropagation()
-
-        const container = menu.parentElement
-
-        if (!container) return
-
-        const bounds = container.getBoundingClientRect()
-
-        console.log(bounds)
-
-        const x = event.clientX - bounds.left
-        const y = event.clientY - bounds.top
-
-        console.log('openContextMenu', event.clientX, event.clientY)
-        console.log('openContextMenu', x, y)
-
-        menu.style.left = `${x}px`
-        menu.style.top = `${y}px`
-
-        menu.classList.add('show')
-
-        window.addEventListener('click', () => {
-            menu.classList.remove('show')
-        })
     }
 }
