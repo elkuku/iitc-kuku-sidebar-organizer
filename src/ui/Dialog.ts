@@ -156,7 +156,7 @@ export class DialogHelper {
                 id: (li as HTMLElement).dataset.id!,
                 title: (li as HTMLElement).dataset.title!,
                 options: {
-                    visible: (li as HTMLElement).dataset.visible !== 'false', //@todo
+                    visible: (li as HTMLElement).dataset.visible !== 'false',
                     icon: '', //@todo
                 }
             }))
