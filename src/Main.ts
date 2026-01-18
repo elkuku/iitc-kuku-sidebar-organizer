@@ -18,7 +18,9 @@ class Main implements Plugin.Class {
     private storage = new StorageService<SorterGroup[]>(this.STORAGE_KEY)
     private state = new SorterState(this.sidebar)
 
-    private dialog:DialogHelper
+    private dialog: DialogHelper
+
+    private hasLoaded = false
 
     init() {
         console.log(`${PLUGIN_NAME} - ${VERSION}`)
@@ -26,7 +28,8 @@ class Main implements Plugin.Class {
         this.createButtons()
 
         // Disable sorting @todo this seems like a hack :(
-        IITC.toolbox.setSortMethod(() => 0)
+        // IITC.toolbox.setSortMethod(() => 0)
+        IITC.toolbox.setSortMethod(this.onSort)
 
         window.addHook('iitcLoaded', this.onIitcLoaded)
     }
@@ -38,12 +41,39 @@ class Main implements Plugin.Class {
 
         if (stored) {
             this.state.groups = stored
+
+            const sidebarLinks = this.sidebar.readLinks()
+
+            const changed = this.state.reconcileWithSidebar(sidebarLinks)
+            if (changed) {
+                console.log(`${PLUGIN_NAME} onLoad - Changed: ${changed}`)
+                this.storage.save(this.state.groups)
+            }
+
             this.sidebar.reorder(this.state.groups)
         } else {
             this.state.initFromSidebar()
         }
 
         this.dialog = new DialogHelper(PLUGIN_NAME, 'Sidebar Organizer', this.state, this.storage, this.sidebar)
+
+        this.hasLoaded = true
+    }
+
+    private onSort = (a: any, b: any) => {
+//        console.log('sorting...', this.hasLoaded, a, b)
+
+        if (this.hasLoaded) {
+            const sidebarLinks = this.sidebar.readLinks()
+            const changed = this.state.reconcileWithSidebar(sidebarLinks)
+            if (changed) {
+                console.log(`${PLUGIN_NAME} - Changed: ${changed}`)
+                this.storage.save(this.state.groups)
+                this.sidebar.reorder(this.state.groups)
+            }
+        }
+
+        return 0
     }
 
     private createButtons(): void {
